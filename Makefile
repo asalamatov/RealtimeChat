@@ -1,5 +1,5 @@
 
-run: run-android run-ios
+run: run-android run-ios server redis
 
 run-android:
 	cd app && npm run android
