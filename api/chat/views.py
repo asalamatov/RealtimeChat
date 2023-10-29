@@ -26,15 +26,15 @@ class SignInView(APIView):
     if not username or not password:
       return Response(status=400)
 
-    print(username, password)
+    print(username)
 
 
     user = authenticate(username=username, password=password)
     if not user:
-      print('Error jsojflsjfslkjfsld')
+      print('Error views.py => not user')
       return Response(status=401)
 
-    print(type(user))
+    # print(type(user))
 
     user_data = get_auth_for_user(user)
 

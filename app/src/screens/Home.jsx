@@ -1,6 +1,6 @@
 import { Image, Text, TextBase, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -10,15 +10,26 @@ const Tab = createBottomTabNavigator();
 import RequestsScreen from './Requests';
 import FriendsScreen from './Friends';
 import ProfileScreen from './Profile';
+import useGlobal from '../core/global';
 
 
 const HomeScreen = ({ navigation }) => {
 
-    useLayoutEffect(() => {
-      navigation.setOptions({
-        headerShown: false,
-      });
-    }, []);
+  const socketConnect = useGlobal(state => state.socketConnect);
+  const socketClose = useGlobal(state => state.socketClose);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, []);
+
+  useEffect(() => {
+    socketConnect();
+    return () => {
+      socketClose();
+    };
+   }, []);
 
   return (
     <Tab.Navigator

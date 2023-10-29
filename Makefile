@@ -9,3 +9,6 @@ run-ios:
 
 server:
 	. env/bin/activate && cd api && python3 manage.py runserver
+
+redis:
+	redis-server

@@ -62,7 +62,7 @@ const SignInScreen = ({ navigation }) => {
           password: password
         };
         utils.log('Sign In: ', response.data);
-        login(credentials, response.data.user);
+        login(credentials, response.data);
       })
       .catch(error => {
         if (error.response) {
