@@ -21,13 +21,13 @@ for (let i = 0; i < arguments.length; i++){
 
 
 function thumbnail(url) {
-    console.log('[thumbnail]: ', url)
+    // console.log('[thumbnail]: ', url)
     if (!url) {
         return ProfileImage;
     }
     return {
         uri: 'http://' + ADDRESS + url
-    };
+    } 
 }
 
 

@@ -1,5 +1,4 @@
-import { Text, View, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, SafeAreaView } from 'react-native';
 import { useLayoutEffect, useState } from 'react';
 import Button from '../common/Button';
 import Input from '../common/Input';
@@ -98,7 +97,7 @@ const SignUpScreen = ({ navigation }) => {
           password: password1,
         };
         utils.log('Sign Up: ', response.data);
-        login(credentials, response.data.user );
+        login(credentials, response.data.user, response.data.tokens);
       })
       .catch(error => {
         if (error.response) {
@@ -160,7 +159,7 @@ const SignUpScreen = ({ navigation }) => {
 
             <Input
               title="Password"
-              // secureTextEntry={true}
+              secureTextEntry={true}
               value={password1}
               setValue={setPassword1}
               error={password1Error}
@@ -169,7 +168,7 @@ const SignUpScreen = ({ navigation }) => {
 
             <Input
               title="Retype Password"
-              // secureTextEntry={true}
+              secureTextEntry={true}
               value={password2}
               setValue={setPassword2}
               error={password2Error}

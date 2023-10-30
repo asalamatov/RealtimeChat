@@ -1,14 +1,15 @@
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { Text, View, Image, TouchableOpacity } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { Text, View, Image, TouchableOpacity, SafeAreaView } from 'react-native';
 import useGlobal from '../core/global';
 import { launchImageLibrary } from 'react-native-image-picker';
 import utils from '../core/utils';
+import { useEffect } from 'react';
+import Thumbnail from '../common/Thumbnail';
 
 
 const ProfileImage = () => {
     const user = useGlobal(state => state.user);
-    const uploadThumbnail = useGlobal(state => state.uploadThumbnail)
+    const uploadThumbnail = useGlobal(state => state.uploadThumbnail);
 
     return (
         <TouchableOpacity
@@ -20,19 +21,16 @@ const ProfileImage = () => {
                     return
                 }
                 const file = response.assets[0]
-                uploadThumbnail(file);
+                console.log('[user]', user)
+                if (file) {
+                    uploadThumbnail(file);
+                } else {
+                    utils.log('[launchImageLibrary]', 'no file')
+                }
             })
         }}
         >
-        <Image
-            source={utils.thumbnail(user.thumbnail)}
-            style={{
-            width: 180,
-            height: 180,
-            borderRadius: 90,
-            backgroundColor: '#e0e0e0',
-            }}
-        />
+        <Thumbnail size={180} url={user.thumbnail} />
         <View
             style={{
             position: 'absolute',

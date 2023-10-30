@@ -1,5 +1,4 @@
-import { Keyboard, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
+import { Keyboard, SafeAreaView, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { useLayoutEffect, useState } from "react";
 import Title from "../common/Title";
 import Input from "../common/Input";
@@ -62,7 +61,7 @@ const SignInScreen = ({ navigation }) => {
           password: password
         };
         utils.log('Sign In: ', response.data);
-        login(credentials, response.data);
+        login(credentials, response.data.user, response.data.tokens);
       })
       .catch(error => {
         if (error.response) {
