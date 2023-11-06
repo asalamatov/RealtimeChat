@@ -3,6 +3,7 @@ import useGlobal from '../core/global';
 import Empty from '../common/Empty';
 import Cell from '../common/Cell';
 import Thumbnail from '../common/Thumbnail';
+import utils from '../core/utils';
 
 const RequestAccept = ({ item }) => {
   const requestAccept = useGlobal(state => state.requestAccept);
@@ -26,7 +27,7 @@ const RequestAccept = ({ item }) => {
 
 const RequestRow = ({ item }) => {
   const message = 'Requested to connect with you'
-  const time = '7m ago'
+
   return (
     <Cell>
       <Thumbnail url={item.sender.thumbnail} size={76} />
@@ -39,7 +40,7 @@ const RequestRow = ({ item }) => {
           {item.sender.name}
         </Text>
         <Text style={{ color: '#606060'}}>
-          {message} <Text style={{fontWeight:'bold', color:'#909090'}}>{time}</Text>
+          {message} <Text style={{fontWeight:'bold', color:'#909090'}}>{ utils.formatTime(item.created) }</Text>
         </Text>
       </View>
       <RequestAccept item={item}  />

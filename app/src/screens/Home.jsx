@@ -15,7 +15,7 @@ import Thumbnail from '../common/Thumbnail';
 
 const HomeScreen = ({ navigation }) => {
 
-    const user = useGlobal(state => state.user);
+  const user = useGlobal(state => state.user);
 
   const socketConnect = useGlobal(state => state.socketConnect);
   const socketClose = useGlobal(state => state.socketClose);
@@ -42,28 +42,28 @@ const HomeScreen = ({ navigation }) => {
     <Tab.Navigator
       screenOptions={({route, navigation}) => ({
         headerLeft: () => (
-          <View style={{marginLeft: 16}}>
-            <Thumbnail size={28} url={user.thumbnail} />
-          </View>
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <View style={{marginLeft: 16}}>
+              <Thumbnail size={28} url={user.thumbnail} />
+            </View>
+          </TouchableOpacity>
         ),
         headerRight: () => (
-            <TouchableOpacity
-                onPress={onSearch}
-            >
-                <FontAwesomeIcon
-                icon="magnifying-glass"
-                size={22}
-                color="#404040"
-                style={{marginRight: 16}}
-                />
-            </TouchableOpacity>
-            ),
-            tabBarIcon: ({focused, color, size}) => {
-                const icons = {
-                    Requests: 'bell',
-                    Friends: 'inbox',
-                    Profile: 'user',
-            };
+          <TouchableOpacity onPress={onSearch}>
+            <FontAwesomeIcon
+              icon="magnifying-glass"
+              size={22}
+              color="#404040"
+              style={{marginRight: 16}}
+            />
+          </TouchableOpacity>
+        ),
+        tabBarIcon: ({focused, color, size}) => {
+          const icons = {
+            Requests: 'bell',
+            Friends: 'inbox',
+            Profile: 'user',
+          };
 
           const icon = icons[route.name];
 

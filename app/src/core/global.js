@@ -3,9 +3,74 @@ import secure from './secure';
 import api, {ADDRESS} from './api';
 import utils from './utils';
 
+
+
+
+
 //------------------------
 //    Socket Receive messages handlers
 //------------------------
+
+function responseMessageType(set, get, data) {
+  if (data.username !== get().messagesUsername) {
+    return;
+  }
+  set(state => ({
+    messageType: new Date(),
+  }));
+}
+
+function reponseFriendNew(set, get, friend) {
+  const friendList = [friend, ...get().friendList];
+  set(state => ({
+    friendList: friendList,
+  }));
+}
+
+function responseMessageSend(set, get, data) {
+  const username = data.friend.username;
+  // Move friendlist item for this friend to the start of list,
+  // update the preivew text and update the time stamp
+  const friendList = [...get().friendList];
+  const friendIndex = friendList.findIndex(
+    item => item.friend.username === username,
+  );
+  if (friendIndex >= 0) {
+    const item = friendList[friendIndex];
+    item.preview = data.message.text;
+    item.updated = data.message.created;
+    friendList.splice(friendIndex, 1);
+    friendList.unshift(item);
+    set(state => ({
+      friendList: friendList,
+    }));
+  }
+
+  // If the message data does not belong to this friind
+  // then don;t update the messagesList, as a fresh messageList will
+  // be loaded the next time the user opens the correct chat window
+  if (get().messagesUsername !== username) {
+    return;
+  }
+
+  const messagesList = [data.message, ...get().messagesList];
+  set(state => ({
+    messagesList: messagesList,
+  }));
+}
+
+function responseMessageList(set, get, data) {
+  set(state => ({
+    messagesList: [...get().messagesList, ...data.messages],
+    messagesUsername: data.friend.username,
+  }));
+}
+
+function responseFriendList(set, get, friendList) {
+  set(state => ({
+    friendList: friendList,
+  }));
+}
 
 function responseRequestAccept(set, get, connection) {
   const user = get().user;
@@ -192,6 +257,7 @@ const useGlobal = create((set, get) => ({
       utils.log('SOCKET: connected');
 
       socket.send(JSON.stringify({source: 'request.list'}));
+      socket.send(JSON.stringify({source: 'friend.list'}));
     };
 
     socket.onmessage = event => {
@@ -199,11 +265,16 @@ const useGlobal = create((set, get) => ({
       // utils.log('onmessage - parsed data: ', parsed.data);
       utils.log('onmessage - parsed: ', parsed);
       const responses = {
-        'request.accept'    : responseRequestAccept,
-        'request.list'      : responseRequestList,
-        'request.connect'   : responseRequestConnect,
-        'search'            : responseSearch,
-        'thumbnail'         : responseThumbnail,
+        'message.type': responseMessageType,
+        'friend.new': reponseFriendNew,
+        'message.send': responseMessageSend,
+        'message.list': responseMessageList,
+        'friend.list': responseFriendList,
+        'request.accept': responseRequestAccept,
+        'request.list': responseRequestList,
+        'request.connect': responseRequestConnect,
+        search: responseSearch,
+        thumbnail: responseThumbnail,
       };
       // utils.log('responses: ', responses)
       const resp = responses[parsed.source];
@@ -261,6 +332,61 @@ const useGlobal = create((set, get) => ({
       }));
     }
   },
+
+  //------------------------
+  //    Messages
+  //------------------------
+
+  messagesList: [],     //? it is message"S"List, not messageList
+  messagesUsername: null,
+  messagesTyping: null,
+
+  messageList: (connectionId, page = 0) => {
+    if (page === 0) {
+      set(state => ({
+        messagesList: [],
+        messagesUsername: null,
+        messagesTyping: null,
+      }));
+    }
+    const socket = get().socket;
+    socket.send(
+      JSON.stringify({
+        source: 'message.list',
+        connectionId: connectionId,
+		    page: page,
+      }),
+    );
+  },
+
+
+  messageSend: (connectionId, message) => {
+    const socket = get().socket;
+    socket.send(
+      JSON.stringify({
+        source: 'message.send',
+        connectionId: connectionId,
+		    message: message,
+      }),
+    );
+  },
+
+
+  messageType: (username) => {
+    const socket = get().socket;
+    socket.send(
+      JSON.stringify({
+        source: 'message.type',
+        username: username,
+      }),
+    );
+  },
+
+  //------------------------
+  //    Friends
+  //------------------------
+
+  friendList: null,
 
   //------------------------
   //    Requests

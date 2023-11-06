@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Connection
+from .models import User, Connection, Message
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -89,3 +89,58 @@ class RequestSerializer(serializers.ModelSerializer):
             'receiver',
             'created'
         ]
+
+
+
+class FriendSerializer(serializers.ModelSerializer):
+
+    friend = serializers.SerializerMethodField()
+    preview = serializers.SerializerMethodField()
+    # updated = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Connection
+        fields = [
+            'id',
+            'friend',
+            'preview',
+            'updated'
+        ]
+
+    def get_friend(self, obj):
+        # If I am the sender
+        if self.context['user'] == obj.sender:
+            return UserSerializer(obj.receiver).data
+        # If I am the receiver
+        elif self.context['user'] == obj.receiver:
+            return UserSerializer(obj.sender).data
+        else:
+            print('ERROR: No user found in friend serializer')
+
+    def get_preview(self, obj):
+        if not hasattr(obj, 'latest_text'):
+            return 'New connection'
+        return obj.latest_text
+
+    def get_updated(self, obj):
+        if not hasattr(obj, 'latest_created'):
+            date = obj.updated
+        else:
+            date = obj.latest_created or obj.updated
+        return date.isoformat()
+
+class MessageSerializer(serializers.ModelSerializer):
+
+    is_me = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Message
+        fields = [
+            'id',
+            'is_me',
+            'text',
+            'created'
+        ]
+
+    def get_is_me(self, obj):
+        return self.context['user'] == obj.user

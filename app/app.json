@@ -1,4 +1,5 @@
 {
   "name": "RealtimeChat",
-  "displayName": "RealtimeChat"
+  "displayName": "RealtimeChat",
+  "icon": "./src/assets/asalamatov.jpg"
 }
